@@ -9,25 +9,28 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "feed_data")
 class FeedData(
-    @Ignore @SerializedName("bit_mapping") val bitmap: List<Int>,
+    @Ignore
+    @SerializedName("bit_mapping")
+    val bitmap: List<Long>,
     var bitMapping: String,
     var lastSyncDomainPointer: Int,
     @Ignore val feed: List<Feed>,
-    @Ignore var gson: Gson,@PrimaryKey(autoGenerate = true)
+    @Ignore var gson: Gson,
+    @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 
 ) {
-    constructor() : this(ArrayList<Int>(), "", 0, ArrayList<Feed>(), GsonBuilder().create())
+    constructor() : this(ArrayList<Long>(), "", 0, ArrayList<Feed>(), GsonBuilder().create())
 
     init {
         gson = GsonBuilder().create()
 
     }
 
-    fun setBitMap(bitmap: List<Int>): String = gson.toJson(bitmap)
+    fun setBitMap(bitmap: List<Long>): String = gson.toJson(bitmap)
 
-    fun getBitMap(bitMapping: String): List<Int> =
-        gson.fromJson(bitMapping, Array<Int>::class.java).toList()
+    fun getBitMap(bitMapping: String): List<Long> =
+        gson.fromJson(bitMapping, Array<Long>::class.java).toList()
 
 
 }
