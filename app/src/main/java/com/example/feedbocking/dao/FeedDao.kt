@@ -15,7 +15,7 @@ interface FeedDao {
     @Query("SELECT * FROM feed where host=:h")
     fun getFeedByHost(h:String): Feed
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(feed: List<Feed>)
 
     @Query("DELETE FROM feed")

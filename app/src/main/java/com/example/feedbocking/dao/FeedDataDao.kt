@@ -11,10 +11,10 @@ import com.example.feedbocking.model.FeedData
 interface FeedDataDao {
 
     @Query("SELECT * FROM feed_data ")
-    fun getFeedData(): FeedData
+    suspend fun getFeedData(): FeedData
 
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFeedData(feedData: FeedData)
 
     @Query("DELETE FROM feed")
