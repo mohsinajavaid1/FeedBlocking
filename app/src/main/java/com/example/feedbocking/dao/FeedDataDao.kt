@@ -19,4 +19,7 @@ interface FeedDataDao {
 
     @Query("DELETE FROM feed")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM feed_data ")
+    fun getFeedDataJava(): FeedData
 }
