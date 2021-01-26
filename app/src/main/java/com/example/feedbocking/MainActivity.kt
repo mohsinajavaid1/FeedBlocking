@@ -12,6 +12,8 @@ import com.example.feedbocking.FileManager.Companion.readFile
 import com.example.feedbocking.data.FeedDatabase
 import com.example.feedbocking.model.Feed
 import com.example.feedbocking.model.FeedData
+import com.example.feedbocking.utils.HashManager
+import com.example.feedbocking.utils.HashUtils
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,9 +40,15 @@ class MainActivity : AppCompatActivity() {
         val gson = Gson()
         val feedData: FeedData = gson.fromJson(json.toString(), FeedData::class.java)
         feedData.bitMapping=feedData.setBitMap(feedData.bitmap)
+
+        var djb2=HashManager.DJBHash("facebook.com")
+        Log.d("DjB2",djb2.toString())
+        var smdb= HashManager.SDBMHash("facebook.com")
+        Log.d("SMDB",smdb.toString())
+        var s="google.com"
 /*       saveFeedData(feedData)
         saveFeeds(feedData.feed)*/
-        getTask()
+     //   getTask()
 
 
     }

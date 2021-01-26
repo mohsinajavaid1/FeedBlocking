@@ -10,6 +10,7 @@ class BitMap {
 
     fun String.changeBitAt(index: Int): String {
 
+var a:Long= 100
 
         val chars = String().toCharArray()
         chars[index] = '1'
