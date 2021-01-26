@@ -12,10 +12,15 @@ class FeedData(
     @Ignore
     @SerializedName("bit_mapping")
     val bitmap: List<Long>,
+
     var bitMapping: String,
+
     var lastSyncDomainPointer: Int,
+
     @Ignore val feed: List<Feed>,
+
     @Ignore var gson: Gson,
+
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 
