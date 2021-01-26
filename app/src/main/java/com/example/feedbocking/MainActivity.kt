@@ -8,19 +8,14 @@ import com.example.feedbocking.FileManager.Companion.readFile
 import com.example.feedbocking.data.FeedDatabase
 import com.example.feedbocking.model.Feed
 import com.example.feedbocking.model.FeedData
-
-import com.example.feedbocking.utils.HashManager
-import com.example.feedbocking.utils.HashUtils
-
 import com.example.feedbocking.utils.BitmapManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.util.*
+import java.util.Arrays.stream
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -68,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         try {
             var data: List<Feed> = database.feedDao().getFeeds();
             var dataFeedRelated: FeedData = database.feedDataDao().getFeedData();
-            val bitmap = dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
+            var bitmap= dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
 
             var bm: BitmapManager = BitmapManager();
             Log.e("DataSlashnext", "Start")
@@ -81,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                   }
   */
 
-            var isExist = bm.isDomainExistInBitmap("mail.free.freefire-luckyspin629.cf", bitmap);
+            var isExist = bm.isDomainExistInBitmap("mail.free.freefire-luckyspin629.cf", bitmap.toLongArray());
           /*  if (isExist) {
                 var isMalicious = checkDomainFromDb("mail.free.freefire-luckyspin629.cf")
             }*/
