@@ -1,6 +1,7 @@
 package com.example.feedbocking
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.feedbocking.FileManager.Companion.readFile
@@ -58,10 +59,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun getTask() = lifecycleScope.launch (Dispatchers.Default) {
         try {
-         var data=   database.feedDao().getFeeds();
-         var dataFeedRelated=   database.feedDataDao().getFeedData();
+         var data:List<Feed> =   database.feedDao().getFeeds();
+         var dataFeedRelated:FeedData=   database.feedDataDao().getFeedData();
+         val bitmap = dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
+
             var bm: BitmapManager = BitmapManager();
-            var ss:String= bm.isDomainExistInBitmap("facebook.com",dataFeedRelated);
+            Log.e("DataSlashnext","Start")
+            var a:Int=0
+            for(item in data){
+                var host:String=item.host
+                if(item.host.startsWith("www.")) {
+                    host = host.replaceFirst("www.", "")
+                }
+                var ss:Boolean= bm.isDomainExistInBitmap(host,bitmap);
+                if(!ss){
+                    Log.e("DataSlashnext",item.host)
+                }
+
+            }
+            Log.e("DataSlashnext","End")
 
         } catch (e: Exception) {
             var e = e.toString()

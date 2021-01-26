@@ -12,21 +12,25 @@ public class BitmapManager {
     static  {
             System.loadLibrary("native-lib");
     }
-    public  boolean isDomainExistInBitmap(String url, FeedData dataFeedRelated){
-        List<Long> bitmap=dataFeedRelated.getBitMap(dataFeedRelated.getBitMapping());
-        int size= bitmap.size();
+    public  boolean isDomainExistInBitmap(String url, List<Long> bitmap){
+        int size= bitmap.size()*32;
 
         long djb2Hash=Long.parseLong(djb2(url));
         long djb2Mode=djb2Hash%size;
-        int djb2ArrayIndex= (int)Math.floor(djb2Mode/32)+1;
+        int djb2ArrayIndex= (int)Math.floor(djb2Mode/32);//1
         long djb2WordBit= (djb2Mode%32);
-        long djb2Bit =getBit(bitmap.get((int)djb2ArrayIndex),djb2WordBit);
+
+        long djb2Number=bitmap.get((int)djb2ArrayIndex);
+
+        long djb2Bit =getBit(djb2Number,djb2WordBit);
+       // long djb2Bit =getBit(djb2Number,17);
 
         long sdbmHash=Long.parseLong(sdbm(url));
         long sdbmMode=sdbmHash%size;
-        int sdbmArrayIndex= (int)Math.floor(sdbmMode/32)+1;
+        int sdbmArrayIndex= (int)Math.floor(sdbmMode/32);//1
         long sdbmWordBit= (sdbmMode%32);
-        long sdbmBit =getBit(bitmap.get((int)sdbmArrayIndex),sdbmWordBit);
+        long sdbmNumber=bitmap.get((int)sdbmArrayIndex);
+        long sdbmBit =getBit(sdbmNumber,sdbmWordBit);
 
 //        String ans="";
 //        for(int a=0;a<64;a++){
