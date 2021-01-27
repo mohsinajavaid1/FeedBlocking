@@ -63,36 +63,36 @@ class MainActivity : AppCompatActivity() {
         try {
             var data: List<Feed> = database.feedDao().getFeeds();
             var dataFeedRelated: FeedData = database.feedDataDao().getFeedData();
-            var bitmap= dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
+            var bitmap = dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
 
             var bm: BitmapManager = BitmapManager();
             Log.e("DataSlashnext", "Start")
             var startTime = System.currentTimeMillis()
             Log.e("Time", System.currentTimeMillis().toString())
-            /*  for (item in data) {
-                  var host: String = item.host
-                  if (item.host.startsWith("www.")) {
-                      host = host.replaceFirst("www.", "")
-                  }
-  */
+            for (item in data) {
+                var host: String = item.host
+                if (item.host.startsWith("www.")) {
+                    host = host.replaceFirst("www.", "")
+                }
 
-            var isExist = bm.isDomainExistInBitmap("mail.free.freefire-luckyspin629.cf", bitmap.toLongArray());
-          /*  if (isExist) {
+                //var isExist = bm.isDomainExistInBitmap(host, bitmap);
+
+                var isExist = bm.isDomainExistInBitmap2(host, bitmap.toLongArray());
+                /*  if (isExist) {
                 var isMalicious = checkDomainFromDb("mail.free.freefire-luckyspin629.cf")
             }*/
 
 
-            /*       if (!isExist) {
-                       Log.e("DataSlashnext", item.host)
-                   }
+                if (!isExist) {
+                    Log.e("DataSlashnext", item.host)
+                }
 
-               }*/
+            }
             var endTime = System.currentTimeMillis()
 
             var elapse = startTime - endTime
-            var nano=TimeUnit.SECONDS.convert(elapse, TimeUnit.NANOSECONDS);
-            Log.e("Time After Bitmap", System.currentTimeMillis().toString())
-            Log.e("Nano", nano.toString())
+            Log.e("Time After Bitmap", endTime.toString())
+            Log.e("Time Difference", elapse.toString())
             Log.e("DataSlashnext", "End")
 
         } catch (e: Exception) {
@@ -101,48 +101,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkDomainFromDb(s: String): Boolean = database.feedDao().getFeedByHost(s) != null
-
-
-//    /**
-//     * A native method that is implemented by the 'native-lib' native library,
-//     * which is packaged with this application.
-//     */
-//    external fun djb2(obj: String?): String
-
-//    /**
-//     * A native method that is implemented by the 'native-lib' native library,
-//     * which is packaged with this application.
-//     */
-//    external fun sdbm(obj: String?): String
 }
 
 
-//Java_com_example_feedbocking_MainActivity_djb2(
-//JNIEnv* env,
-//jobject /* this */,
-//jstring obj) {
-//
-//    const char *domain = env->GetStringUTFChars(obj, 0);
-//    const char *domainsdbm = env->GetStringUTFChars(obj, 0);
-//
-//
-//    unsigned unsigned int hash = 5381;
-//    unsigned int c;
-//
-//    while (c = *domain++)
-//        hash = ((hash << 5) + hash)  ^ c; /* hash * 33 + c */
-//
-//
-//
-//    unsigned unsigned int sdhash = 0;
-//    unsigned int c1;
-//
-//    while (c1 = *domainsdbm++)
-//        sdhash = c1 + (sdhash << 6) + (sdhash << 16) - sdhash;
-//
-//
-//    std::string result = std::to_string(hash) + "@" + std::to_string(sdhash);
-//
-//
-//    return env->NewStringUTF(result.c_str());
-//}
+
+
+

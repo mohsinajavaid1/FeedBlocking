@@ -15,48 +15,60 @@ public class BitmapManager {
         System.loadLibrary("native-lib");
     }
 
-    public boolean isDomainExistInBitmap(String url, long[] bitmap) {
-//        int size = bitmap.size() * 32;
+    public boolean isDomainExistInBitmap(String url, List<Long> bitmap) {
+        int size = bitmap.size() * 32;
 
-//        long djb2Hash = Long.parseLong(djb2(url));
-//        long djb2Mode = djb2Hash % size;
-//        int djb2ArrayIndex = (int) Math.floor(djb2Mode / 32);//1\
-//        long djb2WordBit = (djb2Mode % 32);
-//
-//
-//        long djb2Number = bitmap.get((int) djb2ArrayIndex);
-//
-//        long djb2Bit = getBit(djb2Number, djb2WordBit);
-//        // long djb2Bit =getBit(djb2Number,17);
-//
-//        long sdbmHash = Long.parseLong(sdbm(url));
-//        long sdbmMode = sdbmHash % size;
-//        int sdbmArrayIndex = (int) Math.floor(sdbmMode / 32);//1
-//        long sdbmWordBit = (sdbmMode % 32);
-//        long sdbmNumber = bitmap.get((int) sdbmArrayIndex);
-//        long sdbmBit = getBit(sdbmNumber, sdbmWordBit);
-//
-//
-//        if (sdbmBit == 1 && djb2Bit == 1) {
-//            return true;
-//        } else {
-//            return false;
-//        }
+        long djb2Hash = Long.parseLong(djb2(url));
+        long djb2Mode = djb2Hash % size;
+        int djb2ArrayIndex = (int) Math.floor(djb2Mode / 32);//1\
+        long djb2WordBit = (djb2Mode % 32);
 
 
-      return  isDomainExistBM(url,bitmap);
+        long djb2Number = bitmap.get((int) djb2ArrayIndex);
+
+        long djb2Bit = getBit(djb2Number, djb2WordBit);
+        // long djb2Bit =getBit(djb2Number,17);
+
+        long sdbmHash = Long.parseLong(sdbm(url));
+        long sdbmMode = sdbmHash % size;
+        int sdbmArrayIndex = (int) Math.floor(sdbmMode / 32);//1
+        long sdbmWordBit = (sdbmMode % 32);
+        long sdbmNumber = bitmap.get((int) sdbmArrayIndex);
+        long sdbmBit = getBit(sdbmNumber, sdbmWordBit);
+
+
+        if (sdbmBit == 1 && djb2Bit == 1) {
+            return true;
+        } else {
+            return false;
+        }
+
+
+//      return  isDomainExistBM(url,bitmap);
+
+    }
+
+    public boolean isDomainExistInBitmap2(String url, long[] bitmap) {
+
+
+
+     return  isDomainExistBM(url,bitmap);
 
     }
 
     long getBit(long num, long index) {
         return (num >> index) & 1;
     }
+
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
     public native boolean isDomainExistBM(String obj,long[] arr);
 
+    public native String sdbm(String obj);
+    public native String djb2(String obj);
     public Long change(Long x, int n) {
         return x ^ (1 << n);
     }
