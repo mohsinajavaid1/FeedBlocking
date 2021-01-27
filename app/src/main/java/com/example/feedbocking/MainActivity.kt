@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.feedbocking.FileManager.Companion.readFile
+import com.example.feedbocking.FileManager.Companion.readFileDomain
 import com.example.feedbocking.data.FeedDatabase
 import com.example.feedbocking.model.Feed
 import com.example.feedbocking.model.FeedData
@@ -22,13 +23,17 @@ class MainActivity : AppCompatActivity() {
 
     val database by lazy { FeedDatabase.getDatabase(this) }
     val gson = Gson()
-    var truePositive=0;
-    var falsePositive=0;
+    var truePositive = 0;
+    var falsePositive = 0;
+    var present = 0
+    lateinit var domainData: MutableList<String>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        domainData = readFileDomain(applicationContext, "alexanew.txt")
 
 
         val fileData: String = readFile(applicationContext, "data.txt")
@@ -48,28 +53,26 @@ class MainActivity : AppCompatActivity() {
             var data: List<Feed> = database.feedDao().getFeeds();
             var dataFeedRelated: FeedData = database.feedDataDao().getFeedData();
             var bitmap = dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
-
+            var arr = bitmap.toLongArray()
             var bm: BitmapManager = BitmapManager();
             var startTime = System.currentTimeMillis()
             Log.e("Time", System.currentTimeMillis().toString())
-            for (item in data) {
-                var host: String = item.host
-                if (item.host.startsWith("www.")) {
+            for (item in domainData) {
+                var host: String = item
+                if (item.startsWith("www.")) {
                     host = host.replaceFirst("www.", "")
                 }
 
-                //var isExist = bm.isDomainExistInBitmap(host, bitmap);
+                var isExist = bm.isDomainExistInBitmap2(host, arr)
+                if (isExist) {
 
-                var isExist = bm.isDomainExistInBitmap2(host, bitmap.toLongArray());
-                  if (isExist) {
-
-                var isMalicious = checkDomainFromDb("mail.free.freefire-luckyspin629.cf")
-                      if (!isMalicious) falsePositive+=1
-            }
-                else{ truePositive+=1;
-                      Log.e("DataSlashnext", item.host)}
-
-
+                    var isMalicious = checkDomainFromDb(host)
+                    if (isMalicious) present += 1
+                    else falsePositive += 1
+                } else {
+                    truePositive += 1;
+                    Log.e("DataSlashnext", item)
+                }
 
 
             }
