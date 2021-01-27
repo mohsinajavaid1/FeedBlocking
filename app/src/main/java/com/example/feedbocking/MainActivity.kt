@@ -21,20 +21,19 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
 
     val database by lazy { FeedDatabase.getDatabase(this) }
+    val gson = Gson()
+    var truePositive=0;
+    var falsePositive=0;
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
+
+
         val fileData: String = readFile(applicationContext, "data.txt")
         var obj = JSONObject(fileData)
         var json: JSONObject = obj.getJSONObject("data")
-        val gson = Gson()
         val feedData: FeedData = gson.fromJson(json.toString(), FeedData::class.java)
         feedData.bitMapping = feedData.setBitMap(feedData.bitmap)
 
@@ -42,6 +41,51 @@ class MainActivity : AppCompatActivity() {
 
         getTask()
     }
+
+
+    private fun getTask() = lifecycleScope.launch(Dispatchers.Default) {
+        try {
+            var data: List<Feed> = database.feedDao().getFeeds();
+            var dataFeedRelated: FeedData = database.feedDataDao().getFeedData();
+            var bitmap = dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
+
+            var bm: BitmapManager = BitmapManager();
+            var startTime = System.currentTimeMillis()
+            Log.e("Time", System.currentTimeMillis().toString())
+            for (item in data) {
+                var host: String = item.host
+                if (item.host.startsWith("www.")) {
+                    host = host.replaceFirst("www.", "")
+                }
+
+                //var isExist = bm.isDomainExistInBitmap(host, bitmap);
+
+                var isExist = bm.isDomainExistInBitmap2(host, bitmap.toLongArray());
+                  if (isExist) {
+
+                var isMalicious = checkDomainFromDb("mail.free.freefire-luckyspin629.cf")
+                      if (!isMalicious) falsePositive+=1
+            }
+                else{ truePositive+=1;
+                      Log.e("DataSlashnext", item.host)}
+
+
+
+
+            }
+            var endTime = System.currentTimeMillis()
+
+            var elapse = startTime - endTime
+            Log.e("Time After Bitmap", endTime.toString())
+            Log.e("Time Difference", elapse.toString())
+            Log.e("DataSlashnext", "End")
+
+        } catch (e: Exception) {
+            var e = e.toString()
+        }
+    }
+
+    private fun checkDomainFromDb(s: String): Boolean = database.feedDao().getFeedByHost(s) != null
 
     private fun saveFeedData(feedData: FeedData) = lifecycleScope.launch {
         try {
@@ -59,48 +103,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getTask() = lifecycleScope.launch(Dispatchers.Default) {
-        try {
-            var data: List<Feed> = database.feedDao().getFeeds();
-            var dataFeedRelated: FeedData = database.feedDataDao().getFeedData();
-            var bitmap = dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
-
-            var bm: BitmapManager = BitmapManager();
-            Log.e("DataSlashnext", "Start")
-            var startTime = System.currentTimeMillis()
-            Log.e("Time", System.currentTimeMillis().toString())
-            for (item in data) {
-                var host: String = item.host
-                if (item.host.startsWith("www.")) {
-                    host = host.replaceFirst("www.", "")
-                }
-
-                //var isExist = bm.isDomainExistInBitmap(host, bitmap);
-
-                var isExist = bm.isDomainExistInBitmap2(host, bitmap.toLongArray());
-                /*  if (isExist) {
-                var isMalicious = checkDomainFromDb("mail.free.freefire-luckyspin629.cf")
-            }*/
-
-
-                if (!isExist) {
-                    Log.e("DataSlashnext", item.host)
-                }
-
-            }
-            var endTime = System.currentTimeMillis()
-
-            var elapse = startTime - endTime
-            Log.e("Time After Bitmap", endTime.toString())
-            Log.e("Time Difference", elapse.toString())
-            Log.e("DataSlashnext", "End")
-
-        } catch (e: Exception) {
-            var e = e.toString()
-        }
-    }
-
-    private fun checkDomainFromDb(s: String): Boolean = database.feedDao().getFeedByHost(s) != null
 }
 
 
