@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.feedbocking.FileManager.Companion.readFile
+import com.example.feedbocking.FileManager.Companion.readFileDomain
 import com.example.feedbocking.data.FeedDatabase
 import com.example.feedbocking.model.Feed
 import com.example.feedbocking.model.FeedData
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
+        val domainData:MutableList<String> = readFileDomain(applicationContext, "alexanew.txt")
+
         val fileData: String = readFile(applicationContext, "data.txt")
         var obj = JSONObject(fileData)
         var json: JSONObject = obj.getJSONObject("data")
@@ -64,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             var data: List<Feed> = database.feedDao().getFeeds();
             var dataFeedRelated: FeedData = database.feedDataDao().getFeedData();
             var bitmap = dataFeedRelated.getBitMap(dataFeedRelated.bitMapping)
-
+            var arr=bitmap.toLongArray()
             var bm: BitmapManager = BitmapManager();
             Log.e("DataSlashnext", "Start")
             var startTime = System.currentTimeMillis()
@@ -77,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
                 //var isExist = bm.isDomainExistInBitmap(host, bitmap);
 
-                var isExist = bm.isDomainExistInBitmap2(host, bitmap.toLongArray());
+                var isExist = bm.isDomainExistInBitmap2(host, arr);
                 /*  if (isExist) {
                 var isMalicious = checkDomainFromDb("mail.free.freefire-luckyspin629.cf")
             }*/
