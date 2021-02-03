@@ -22,7 +22,11 @@ public class BitmapManager {
         return  isDomainExistBM(url,bitmap);
 
     }
+    public long[] CreateNewBitmap(String url, long[] bitmap) {
 
+        return  createBitmap(url,bitmap);
+
+    }
     long getBit(long num, long index) {
         return (num >> index) & 1;
     }
@@ -35,5 +39,7 @@ public class BitmapManager {
     public native boolean isDomainExistBM(String obj,long[] arr);
 
     public native List<Long> processDeltaBM(long[] arr);
+
+    public native long[] createBitmap(String url, long[] bitmap);
 
 }

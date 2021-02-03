@@ -3,9 +3,9 @@
 #include <math.h>
 
 
-jlong modifyBit(long number, long index, int i);
+jlong modifyBit(long number, long index, long i);
 
-void updateBit(jlong *pInt, jlong number);
+void updateBit(jlong *pInt, jlong number,jlong size);
 
 unsigned int sdbmHash(const char *domain) {
     unsigned unsigned int hash = 0;
@@ -87,10 +87,10 @@ Java_com_example_feedbocking_utils_BitmapManager_processDeltaBM(
 
 
     int length = env->GetArrayLength(array);
-
+    long size=length*32;
     for (int i = 0; i < length; i++) {
         jlong number = (jlong) (env->GetObjectArrayElement(reinterpret_cast<jobjectArray>(array),i));
-        updateBit(elements, number);
+        updateBit(elements, number,size);
     }
 
     env->ReleaseLongArrayElements(array, elements, NULL);
@@ -98,9 +98,9 @@ Java_com_example_feedbocking_utils_BitmapManager_processDeltaBM(
     return array;
 }
 
-void updateBit(jlong *array, jlong element) {
-    int arrayIndex = (int) floor(element / 32);
-    long bitIndex = (arrayIndex % 32);
+void updateBit(jlong *array, jlong element,jlong size) {
+    int arrayIndex = (int) floor(element / size);
+    long bitIndex = (arrayIndex % size);
     long number = array[arrayIndex];
     //number |= number << bitIndex-1;
     array[arrayIndex] = modifyBit(number, bitIndex, 1);;
@@ -109,9 +109,42 @@ void updateBit(jlong *array, jlong element) {
 
 
 
-jlong modifyBit(long n, long p, int b) {
+jlong modifyBit(long n, long p, long b) {
     int mask = 1 << p;
     return (n & ~mask) | ((b << p) & mask);
+}
+
+extern "C" JNIEXPORT jlongArray JNICALL
+Java_com_example_feedbocking_utils_BitmapManager_createBitmap(
+        JNIEnv *env,
+        jobject /* this */,
+        jstring obj,
+        jlongArray array){
+
+    const char *domain = env->GetStringUTFChars(obj, 0);
+    jlong *elements = env->GetLongArrayElements(array, 0);
+    int length = env->GetArrayLength(array);
+    long size=length*32;
+
+    //djb2
+    long djb2Mode = djb2Hash(domain) % size;
+    int djb2ArrayIndex = (int) floor(djb2Mode / 32);
+    long djb2WordBit = (djb2Mode % 32);
+    jlong djb2Number = elements[djb2ArrayIndex];
+
+    elements[djb2ArrayIndex] = modifyBit(djb2Number, djb2WordBit, 1);
+
+
+    long sdbmMode = sdbmHash(domain) % size;
+    int sdbmArrayIndex = (int) floor(sdbmMode / 32);
+    long sdbmWordBit = (sdbmMode % 32);
+    long sdbmNumber = elements[sdbmArrayIndex];
+
+    elements[sdbmArrayIndex] = modifyBit(sdbmNumber, sdbmWordBit, 1);
+
+    env->ReleaseLongArrayElements(array, elements, NULL);
+
+    return array;
 }
 
 
