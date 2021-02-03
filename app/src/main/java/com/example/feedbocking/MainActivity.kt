@@ -33,18 +33,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        domainData = readFileDomain(applicationContext, "alexanew.txt")
+        readData()
+        getTask()
+    }
 
+    private fun readData() {
+        domainData = readFileDomain(applicationContext, "alexanew.txt")
 
         val fileData: String = readFile(applicationContext, "data.txt")
         var obj = JSONObject(fileData)
         var json: JSONObject = obj.getJSONObject("data")
         val feedData: FeedData = gson.fromJson(json.toString(), FeedData::class.java)
         feedData.bitMapping = feedData.setBitMap(feedData.bitmap)
-
-
-
-        getTask()
     }
 
 
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                     host = host.replaceFirst("www.", "")
                 }
 
-                var isExist = bm.isDomainExistInBitmap2(host, arr)
+                var isExist = bm.isDomainExistInBitmap(host, arr)
                 if (isExist) {
 
                     var isMalicious = checkDomainFromDb(host)

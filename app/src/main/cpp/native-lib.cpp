@@ -3,6 +3,10 @@
 #include <math.h>
 
 
+jlong modifyBit(long number, long index, int i);
+
+void updateBit(jlong *pInt, jlong number);
+
 unsigned int sdbmHash(const char *domain) {
     unsigned unsigned int hash = 0;
     unsigned int c1;
@@ -72,46 +76,45 @@ Java_com_example_feedbocking_utils_BitmapManager_isDomainExistBM(
 
 }
 
-
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_feedbocking_utils_BitmapManager_djb2(
-        JNIEnv* env,
+extern "C" JNIEXPORT jlongArray JNICALL
+Java_com_example_feedbocking_utils_BitmapManager_processDeltaBM(
+        JNIEnv *env,
         jobject /* this */,
-        jstring obj) {
+        jlongArray array) {
 
-    const char *domain = env->GetStringUTFChars(obj, 0);
 
-    unsigned unsigned int hash = 5381;
-    unsigned int c;
+    jlong *elements = env->GetLongArrayElements(array, 0);
 
-    while (c = *domain++) {
-        hash = ((hash << 5) + hash) ^ c; /* hash * 33 + c */
+
+    int length = env->GetArrayLength(array);
+
+    for (int i = 0; i < length; i++) {
+        jlong number = (jlong) (env->GetObjectArrayElement(reinterpret_cast<jobjectArray>(array),i));
+        updateBit(elements, number);
     }
 
+    env->ReleaseLongArrayElements(array, elements, NULL);
 
-    std::string result = "" + std::to_string(hash);
-    return env->NewStringUTF(result.c_str());
-
+    return array;
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_feedbocking_utils_BitmapManager_sdbm(
-        JNIEnv* env,
-        jobject /* this */,
-        jstring obj) {
-
-    const char *domainsdbm = env->GetStringUTFChars(obj, 0);
-
-    unsigned unsigned int sdhash = 0;
-    unsigned int c1;
-
-    while (c1 = *domainsdbm++) {
-        sdhash = c1 + (sdhash << 6) + (sdhash << 16) - sdhash;
-    }
-
-    std::string result = "" + std::to_string(sdhash);
-    return env->NewStringUTF(result.c_str());
+void updateBit(jlong *array, jlong element) {
+    int arrayIndex = (int) floor(element / 32);
+    long bitIndex = (arrayIndex % 32);
+    long number = array[arrayIndex];
+    //number |= number << bitIndex-1;
+    array[arrayIndex] = modifyBit(number, bitIndex, 1);;
 }
+
+
+
+
+jlong modifyBit(long n, long p, int b) {
+    int mask = 1 << p;
+    return (n & ~mask) | ((b << p) & mask);
+}
+
+
 
 
 
